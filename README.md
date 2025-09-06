@@ -29,7 +29,6 @@ This repository demonstrates how a SOC analyst performs log analysis in Splunk. 
 │   ├── top_failed_ips.png
 │   ├── suspicious_processes.png
 │   ├── suricata_alerts.png
-│   ├── dns_queries.png
 │   ├── auth_failures_vs_successes.png
 │   ├── fail_success_sequences.png
 │   ├── geo_asn_enrichment.png
