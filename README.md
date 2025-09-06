@@ -173,4 +173,4 @@ All screenshots are included in the `screenshots/` folder and referenced inline 
 
 ---
 
-This repo shows how raw logs are turned into **actionable intelligence** — the core responsibility of a SOC analyst, and demonstrates hands-on skills with Splunk, Sysmon, Suricata, Zeek, and Nessus.
+This repo shows how raw logs are turned into **actionable intelligence**, the core responsibility of a SOC analyst, and demonstrates hands-on skills with Splunk, Sysmon, Suricata, Zeek, and Nessus.
