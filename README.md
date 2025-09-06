@@ -125,13 +125,11 @@ OR
 ![Top Failed IPs](screenshots/top_failed_ips.png)
 ![Suspicious Processes](screenshots/suspicious_processes.png)
 ![Suricata Alerts](screenshots/suricata_alerts.png)
-![DNS Queries](screenshots/dns_queries.png)
 
 ### Windows Authentication Triage
 
 ![Auth Failures vs Successes](screenshots/auth_failures_vs_successes.png)
 ![Fail → Success Sequences](screenshots/fail_success_sequences.png)
-![Geo/ASN Enrichment](screenshots/geo_asn_enrichment.png)
 
 ### Threat Hunting — Rare & First-Seen
 
