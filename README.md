@@ -33,10 +33,7 @@ This repository demonstrates how a SOC analyst performs log analysis in Splunk. 
 │   ├── auth_failures_vs_successes.png
 │   ├── fail_success_sequences.png
 │   ├── geo_asn_enrichment.png
-│   ├── rare_processes.png
 │   ├── rare_parent_child.png
-│   ├── first_seen_binaries.png
-│   ├── rare_dns.png
 │   └── new_external_ips.png
 │
 ├── README_IMPORT.md                       # How to import dashboards, macros, saved searches
@@ -139,10 +136,7 @@ OR
 
 ### Threat Hunting — Rare & First-Seen
 
-![Rare Processes](screenshots/rare_processes.png)
 ![Rare Parent→Child](screenshots/rare_parent_child.png)
-![First-Seen Binaries](screenshots/first_seen_binaries.png)
-![Rare DNS](screenshots/rare_dns.png)
 ![New External IPs](screenshots/new_external_ips.png)
 
 ---
