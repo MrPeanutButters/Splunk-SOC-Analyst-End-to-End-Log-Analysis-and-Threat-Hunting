@@ -1,0 +1,134 @@
+{
+  "description": "Threat Hunting \u2014 rare events and first-seen lenses over host and network telemetry.",
+  "title": "Threat Hunting \u2014 Rare & First-Seen",
+  "visualizations": {
+    "viz_rare_processes": {
+      "type": "splunk.table",
+      "title": "Rare Processes (Sysmon 4688)",
+      "dataSources": [
+        "ds_rare_processes"
+      ]
+    },
+    "viz_rare_parent_child": {
+      "type": "splunk.table",
+      "title": "Rare Parent\u2192Child Chains",
+      "dataSources": [
+        "ds_rare_parent_child"
+      ]
+    },
+    "viz_first_seen_binaries": {
+      "type": "splunk.table",
+      "title": "First-Seen Binaries (24h)",
+      "dataSources": [
+        "ds_first_seen_binaries"
+      ]
+    },
+    "viz_rare_dns": {
+      "type": "splunk.table",
+      "title": "Rare DNS Queries",
+      "dataSources": [
+        "ds_rare_dns"
+      ]
+    },
+    "viz_new_external_ips": {
+      "type": "splunk.table",
+      "title": "New External IP Destinations (Zeek conn)",
+      "dataSources": [
+        "ds_new_external_ips"
+      ]
+    }
+  },
+  "dataSources": {
+    "ds_rare_processes": {
+      "type": "ds.search",
+      "options": {
+        "query": "search `base_indexes` index=sysmon EventCode=4688 earliest=-24h@h latest=now\n| stats count by NewProcessName\n| eventstats avg(count) as avg stdev(count) as sd\n| where count <= avg - sd OR count < 5\n| sort count"
+      }
+    },
+    "ds_rare_parent_child": {
+      "type": "ds.search",
+      "options": {
+        "query": "search `base_indexes` index=sysmon EventCode=4688 earliest=-24h@h latest=now\n| eval chain=ParentImage.\" \u2192 \".NewProcessName\n| stats count by chain\n| where count < 3\n| sort count, chain"
+      }
+    },
+    "ds_first_seen_binaries": {
+      "type": "ds.search",
+      "options": {
+        "query": "search `base_indexes` index=sysmon EventCode=4688 earliest=-24h@h latest=now\n| stats earliest(_time) as firstSeen latest(_time) as lastSeen count by NewProcessName, Image, User, host\n| where firstSeen >= relative_time(now(), \"-24h@h\")\n| eval firstSeen=strftime(firstSeen, \"%Y-%m-%d %H:%M:%S\")\n| sort - lastSeen"
+      }
+    },
+    "ds_rare_dns": {
+      "type": "ds.search",
+      "options": {
+        "query": "search `base_indexes` sourcetype=zeek:dns earliest=-24h@h latest=now\n| stats count by query\n| where count < 3 AND NOT [ | inputlookup known_dns_whitelist | fields query ]\n| sort count, query"
+      }
+    },
+    "ds_new_external_ips": {
+      "type": "ds.search",
+      "options": {
+        "query": "search `base_indexes` sourcetype=zeek:conn earliest=-24h@h latest=now\n| where dest_ip!=\"10.0.0.0/8\" AND dest_ip!=\"192.168.0.0/16\" AND dest_ip!=\"172.16.0.0/12\"\n| stats earliest(_time) as firstSeen latest(_time) as lastSeen count by dest_ip, dest_port, proto\n| where firstSeen >= relative_time(now(), \"-24h@h\")\n| lookup asn_lookup ip as dest_ip OUTPUT asn, org\n| sort - count"
+      }
+    }
+  },
+  "layout": {
+    "type": "grid",
+    "structure": [
+      [
+        {
+          "item": "viz_rare_processes",
+          "type": "block",
+          "position": {
+            "x": 0,
+            "y": 0,
+            "w": 8,
+            "h": 6
+          }
+        },
+        {
+          "item": "viz_rare_parent_child",
+          "type": "block",
+          "position": {
+            "x": 8,
+            "y": 0,
+            "w": 8,
+            "h": 6
+          }
+        }
+      ],
+      [
+        {
+          "item": "viz_first_seen_binaries",
+          "type": "block",
+          "position": {
+            "x": 0,
+            "y": 6,
+            "w": 16,
+            "h": 6
+          }
+        }
+      ],
+      [
+        {
+          "item": "viz_rare_dns",
+          "type": "block",
+          "position": {
+            "x": 0,
+            "y": 12,
+            "w": 8,
+            "h": 6
+          }
+        },
+        {
+          "item": "viz_new_external_ips",
+          "type": "block",
+          "position": {
+            "x": 8,
+            "y": 12,
+            "w": 8,
+            "h": 6
+          }
+        }
+      ]
+    ]
+  }
+}

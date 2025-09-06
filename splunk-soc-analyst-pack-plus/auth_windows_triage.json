@@ -1,0 +1,134 @@
+{
+  "description": "Windows Authentication \u2014 pivotable views for analysts (users, hosts, IPs).",
+  "title": "Windows Authentication Triage",
+  "visualizations": {
+    "viz_auth_trend": {
+      "type": "splunk.line",
+      "title": "Auth Failures vs Successes (24h)",
+      "dataSources": [
+        "ds_auth_trend"
+      ]
+    },
+    "viz_top_failed_users": {
+      "type": "splunk.bar",
+      "title": "Top Users by Failed Logons",
+      "dataSources": [
+        "ds_top_failed_users"
+      ]
+    },
+    "viz_top_srcip_failed": {
+      "type": "splunk.bar",
+      "title": "Top Source IPs by Failed Logons",
+      "dataSources": [
+        "ds_top_srcip_failed"
+      ]
+    },
+    "viz_sequence_fail_success": {
+      "type": "splunk.table",
+      "title": "Fail \u2192 Success Sequences (Potential Compromise)",
+      "dataSources": [
+        "ds_sequence_fail_success"
+      ]
+    },
+    "viz_geo_heat_ip": {
+      "type": "splunk.table",
+      "title": "External IPs with Geo/ASN (enrichment-ready)",
+      "dataSources": [
+        "ds_geo_heat_ip"
+      ]
+    }
+  },
+  "dataSources": {
+    "ds_auth_trend": {
+      "type": "ds.search",
+      "options": {
+        "query": "search `base_indexes` (sourcetype=WinEventLog:Security (EventCode=4624 OR EventCode=4625)) earliest=-24h@h latest=now\n| eval outcome=if(EventCode=4624, \"success\", \"failure\")\n| timechart span=10m count by outcome"
+      }
+    },
+    "ds_top_failed_users": {
+      "type": "ds.search",
+      "options": {
+        "query": "search `base_indexes` sourcetype=WinEventLog:Security EventCode=4625 earliest=-24h@h latest=now\n| stats count by Account_Name\n| sort - count | head 15"
+      }
+    },
+    "ds_top_srcip_failed": {
+      "type": "ds.search",
+      "options": {
+        "query": "search `base_indexes` sourcetype=WinEventLog:Security EventCode=4625 earliest=-24h@h latest=now\n| stats count by src_ip\n| sort - count | head 15"
+      }
+    },
+    "ds_sequence_fail_success": {
+      "type": "ds.search",
+      "options": {
+        "query": "search `base_indexes` sourcetype=WinEventLog:Security (EventCode=4625 OR EventCode=4624) earliest=-24h@h latest=now\n| eval outcome=if(EventCode=4624, \"success\", \"failure\")\n| stats values(outcome) as outcomes min(_time) as firstSeen max(_time) as lastSeen count by Account_Name, src_ip, dest, host\n| where mvfind(outcomes, \"failure\")>=0 AND mvfind(outcomes, \"success\")>=0\n| eval window=tostring(lastSeen-firstSeen, \"duration\")\n| sort - lastSeen"
+      }
+    },
+    "ds_geo_heat_ip": {
+      "type": "ds.search",
+      "options": {
+        "query": "search `base_indexes` sourcetype=WinEventLog:Security EventCode=4625 src_ip=* earliest=-24h@h latest=now\n| stats count by src_ip\n| lookup asn_lookup ip as src_ip OUTPUT asn, org\n| sort - count | head 50"
+      }
+    }
+  },
+  "layout": {
+    "type": "grid",
+    "structure": [
+      [
+        {
+          "item": "viz_auth_trend",
+          "type": "block",
+          "position": {
+            "x": 0,
+            "y": 0,
+            "w": 16,
+            "h": 5
+          }
+        }
+      ],
+      [
+        {
+          "item": "viz_top_failed_users",
+          "type": "block",
+          "position": {
+            "x": 0,
+            "y": 5,
+            "w": 8,
+            "h": 6
+          }
+        },
+        {
+          "item": "viz_top_srcip_failed",
+          "type": "block",
+          "position": {
+            "x": 8,
+            "y": 5,
+            "w": 8,
+            "h": 6
+          }
+        }
+      ],
+      [
+        {
+          "item": "viz_sequence_fail_success",
+          "type": "block",
+          "position": {
+            "x": 0,
+            "y": 11,
+            "w": 12,
+            "h": 6
+          }
+        },
+        {
+          "item": "viz_geo_heat_ip",
+          "type": "block",
+          "position": {
+            "x": 12,
+            "y": 11,
+            "w": 4,
+            "h": 6
+          }
+        }
+      ]
+    ]
+  }
+}
