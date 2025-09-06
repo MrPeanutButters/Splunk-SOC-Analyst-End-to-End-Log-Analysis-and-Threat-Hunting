@@ -24,7 +24,7 @@ This repository demonstrates how a SOC analyst performs log analysis in Splunk. 
 │   ├── known_admin_tools.csv              # Dual-use admin tools
 │   └── known_dns_whitelist.csv            # DNS allowlist
 │
-├── screenshots/                           # Example screenshots of dashboards
+├── screenshots/                           
 │   ├── failed_logins_over_time.png
 │   ├── top_failed_ips.png
 │   ├── suspicious_processes.png
