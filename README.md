@@ -1,4 +1,4 @@
-# 🔍 Splunk SOC Analyst Pack — End-to-End Log Analysis & Threat Hunting
+# 🔍End-to-End Log Analysis & Threat Hunting
 
 This repository demonstrates how a SOC analyst performs log analysis in Splunk. It is based on my homelab setup with **Splunk, Sysmon, Suricata, Zeek, and Nessus**, and mirrors workflows used in enterprise SOC environments.
 
@@ -24,6 +24,21 @@ This repository demonstrates how a SOC analyst performs log analysis in Splunk. 
 │   ├── known_admin_tools.csv              # Dual-use admin tools
 │   └── known_dns_whitelist.csv            # DNS allowlist
 │
+├── screenshots/                           # Example screenshots of dashboards
+│   ├── failed_logins_over_time.png
+│   ├── top_failed_ips.png
+│   ├── suspicious_processes.png
+│   ├── suricata_alerts.png
+│   ├── dns_queries.png
+│   ├── auth_failures_vs_successes.png
+│   ├── fail_success_sequences.png
+│   ├── geo_asn_enrichment.png
+│   ├── rare_processes.png
+│   ├── rare_parent_child.png
+│   ├── first_seen_binaries.png
+│   ├── rare_dns.png
+│   └── new_external_ips.png
+│
 ├── README_IMPORT.md                       # How to import dashboards, macros, saved searches
 ├── README_LOOKUPS.md                      # How to use enrichment/whitelisting lookups
 └── README.md                              # (this file) Full workflow + repo overview
@@ -46,8 +61,6 @@ This repository demonstrates how a SOC analyst performs log analysis in Splunk. 
 ---
 
 ## 2. Baseline Queries
-
-Establish normal activity to catch anomalies.
 
 ```spl
 index=wineventlog sourcetype=WinEventLog:Security EventCode=4624
@@ -75,8 +88,6 @@ index=sysmon EventCode=4688
 | stats count by ParentImage, NewProcessName, User
 | where like(ParentImage, "%powershell.exe") AND like(NewProcessName, "%cmd.exe")
 ```
-
-Flags PowerShell spawning cmd.exe — common attacker technique.
 
 ---
 
@@ -112,11 +123,27 @@ OR
 
 ## 8. Dashboards
 
-* **SOC Analyst Overview** — failed logins, suspicious processes, Suricata alerts, DNS beaconing.
-* **Windows Authentication Triage** — login trends, fail→success sequences, geo-IP enrichment.
-* **Threat Hunting — Rare & First-Seen** — rare processes, first-seen binaries, rare DNS, new external IPs.
+### SOC Analyst Overview
 
-*(See `dashboards/` folder; import instructions in `README_IMPORT.md`)*
+![Failed Logins Over Time](screenshots/failed_logins_over_time.png)
+![Top Failed IPs](screenshots/top_failed_ips.png)
+![Suspicious Processes](screenshots/suspicious_processes.png)
+![Suricata Alerts](screenshots/suricata_alerts.png)
+![DNS Queries](screenshots/dns_queries.png)
+
+### Windows Authentication Triage
+
+![Auth Failures vs Successes](screenshots/auth_failures_vs_successes.png)
+![Fail → Success Sequences](screenshots/fail_success_sequences.png)
+![Geo/ASN Enrichment](screenshots/geo_asn_enrichment.png)
+
+### Threat Hunting — Rare & First-Seen
+
+![Rare Processes](screenshots/rare_processes.png)
+![Rare Parent→Child](screenshots/rare_parent_child.png)
+![First-Seen Binaries](screenshots/first_seen_binaries.png)
+![Rare DNS](screenshots/rare_dns.png)
+![New External IPs](screenshots/new_external_ips.png)
 
 ---
 
@@ -142,7 +169,7 @@ OR
 
 ## 📸 Screenshots
 
-
+All screenshots are included in the `screenshots/` folder and referenced inline above.
 
 ---
 
